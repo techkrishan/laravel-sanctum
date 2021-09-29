@@ -2,8 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\V1\QuestionController;
+use App\Http\Controllers\V1\AuthenticationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,15 +17,21 @@ use App\Http\Controllers\AuthenticationController;
 */
 
 
-// User registration  
-Route::post('/register', [AuthenticationController::class, 'register']);
-// User Login
-Route::post('/login', [AuthenticationController::class, 'login']);
+Route::group(['prefix' => 'v1'], function () {
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Unauthenticated routes  
+    Route::post('/register', [AuthenticationController::class, 'register']);
+    Route::post('/login', [AuthenticationController::class, 'login']);
 
-    Route::post('/logout', [AuthenticationController::class, 'logout']);
+    // Authenticated routes
+    Route::group(['middleware' => ['auth:sanctum']], function () {
+
+        Route::post('/logout', [AuthenticationController::class, 'logout']);
     
-    Route::resource('questions', QuestionController::class);
+        Route::resource('questions', QuestionController::class);
+
+    });
 
 });
+
+

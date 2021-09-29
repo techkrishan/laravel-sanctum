@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Auth;
 
-class AuthenticationController extends Controller
+class AuthenticationController extends ApiController
 {
     
     /**
@@ -26,12 +27,14 @@ class AuthenticationController extends Controller
         $user = User::create([
             'first_name' => $attr['first_name'],
             'last_name' => $attr['last_name'],
+            'full_name' => $attr['first_name'] . ' ' . $attr['last_name'],
             'password' => bcrypt($attr['password']),
             'email' => $attr['email']
         ]);
 
         return $this->success([
-            'token' => $user->createToken('tokens')->plainTextToken
+            'token' => $user->createToken('tokens')->plainTextToken,
+            'user' => $user,
         ]);
     }
 
@@ -54,7 +57,8 @@ class AuthenticationController extends Controller
         }
 
         return $this->success([
-            'token' => auth()->user()->createToken('API Token')->plainTextToken
+            'token' => auth()->user()->createToken('API Token')->plainTextToken,
+            'user' => Auth::user(),
         ]);
     }
 

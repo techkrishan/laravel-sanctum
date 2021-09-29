@@ -10,14 +10,4 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-    /**
-     * This function is used to return json response on success
-     * @param mixed $data=[]
-     * 
-     * @return [type]
-     */
-    public function success($data=[]) {
-        return response()->json($data); 
-    }
 }

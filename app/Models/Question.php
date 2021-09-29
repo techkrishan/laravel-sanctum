@@ -18,4 +18,11 @@ class Question extends Model
         'question',
         'user_id',
     ];
+
+    /**
+     * Get the user that owns the question.
+     */
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }
