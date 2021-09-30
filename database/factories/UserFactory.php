@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\{UserRole, User};
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+
 
 class UserFactory extends Factory
 {
@@ -26,6 +27,7 @@ class UserFactory extends Factory
         $lastName = $this->faker->lastName();
 
         return [
+            'role_id' => UserRole::where(['slug'=>config('constants.user_roles.public.slug')])->first()->id,
             'first_name' => $firstName,
             'last_name' => $lastName,
             'full_name' => $firstName . ' ' . $lastName,

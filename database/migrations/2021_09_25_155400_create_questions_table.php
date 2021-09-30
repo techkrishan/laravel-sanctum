@@ -16,11 +16,13 @@ class CreateQuestionsTable extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedInteger('category_id')->nullable();
             $table->text('question');
             $table->boolean('is_active')->default(false);
             $table->boolean('is_deleted')->default(false);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('category_id')->references('id')->on('lookups');
         });
     }
 
