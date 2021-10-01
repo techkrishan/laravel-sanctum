@@ -15,17 +15,17 @@ class CreateLookupsTable extends Migration
     {
         Schema::create('lookups', function (Blueprint $table) {
             $table->integerIncrements('id');
-            $table->unsignedInteger('parent_id')->nullable();
-            $table->string('lookup_type', 50);
             $table->string('label', 50);
-            $table->string('code', 50);
-            $table->string('lookup_value', 255)->nullable();
+            $table->string('slug', 50)->unique();
+            $table->string('lookup_type', 50);
+            $table->unsignedInteger('parent_id')->nullable();
             $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->boolean('is_default')->default(false);
+            $table->boolean('is_public')->default(true);
             $table->boolean('is_active')->default(true);
             $table->boolean('is_deleted')->default(false);
             $table->timestamps();
             $table->index('lookup_type');
-            $table->index('code');
             $table->foreign('parent_id')->references('id')->on('lookups');
         });
     }

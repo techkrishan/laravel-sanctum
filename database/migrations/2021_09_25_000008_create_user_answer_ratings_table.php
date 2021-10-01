@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserQuestionRatingsTable extends Migration
+class CreateUserAnswerRatingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUserQuestionRatingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_question_ratings', function (Blueprint $table) {
+        Schema::create('user_answer_ratings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('question_id');
             $table->unsignedBigInteger('to_user_id')->comment('who receive the rating');
@@ -34,6 +34,6 @@ class CreateUserQuestionRatingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_question_ratings');
+        Schema::dropIfExists('user_answer_ratings');
     }
 }

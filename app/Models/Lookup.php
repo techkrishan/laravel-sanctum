@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRole extends Model
+class Lookup extends Model
 {
     use HasFactory;
 
@@ -15,8 +15,13 @@ class UserRole extends Model
      * @var string[]
      */
     protected $fillable = [
-        'slug',
+        'parent_id',
+        'lookup_type',
         'label',
+        'slug',
+        'sort_order',
         'is_default',
+        'is_public',
+        'is_active',
     ];
 }

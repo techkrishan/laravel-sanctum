@@ -2,23 +2,29 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Models\User;
-use App\Http\Controllers\Controller;
+use App\Models\Lookup;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserRequest;
-use App\Services\UserService;
-use Auth;
 
-class UserController extends ApiController
+class LookupController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        return $this->success((new UserService())->fetchList($request, Auth::user()->id), "", 200);
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -27,19 +33,18 @@ class UserController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
-        $question = (new UserService())->saveDetails(null, $request->validated(), Auth::user()->id);
-        return $this->success($question, __('messages.question_saved'), 201);
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Lookup  $lookup
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Lookup $lookup)
     {
         //
     }
@@ -47,10 +52,10 @@ class UserController extends ApiController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Lookup  $lookup
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Lookup $lookup)
     {
         //
     }
@@ -59,10 +64,10 @@ class UserController extends ApiController
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Lookup  $lookup
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Lookup $lookup)
     {
         //
     }
@@ -70,10 +75,10 @@ class UserController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Lookup  $lookup
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Lookup $lookup)
     {
         //
     }

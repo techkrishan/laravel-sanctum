@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
+use App\Services\UserService;
 use App\Models\User;
 use Auth;
 
@@ -15,27 +17,10 @@ class AuthenticationController extends ApiController
      * 
      * @return [type]
      */
-    public function register(Request $request)
+    public function register(UserRequest $request)
     {
-        $attr = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:6|max:30'
-        ]);
-
-        $user = User::create([
-            'first_name' => $attr['first_name'],
-            'last_name' => $attr['last_name'],
-            'full_name' => $attr['first_name'] . ' ' . $attr['last_name'],
-            'password' => bcrypt($attr['password']),
-            'email' => $attr['email']
-        ]);
-
-        return $this->success([
-            'token' => $user->createToken('tokens')->plainTextToken,
-            'user' => $user,
-        ]);
+        (new UserService())->saveDetails(null, $request->validated(), null);
+        return $this->success([], __('messages.user_register'));
     }
 
     
@@ -53,7 +38,7 @@ class AuthenticationController extends ApiController
         ]);
 
         if (!Auth::attempt($attr)) {
-            return $this->error('Credentials not match', 401);
+            return $this->error(__('messages.credentials_not_match'), 401);
         }
 
         return $this->success([
@@ -71,7 +56,7 @@ class AuthenticationController extends ApiController
         auth()->user()->tokens()->delete();
 
         return [
-            'message' => 'Tokens Revoked'
+            'message' => __('messages.user_logout')
         ];
     }
 }

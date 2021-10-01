@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Question;
-use App\Models\User;
+use App\Models\{User, Lookup};
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class QuestionFactory extends Factory
@@ -25,6 +25,7 @@ class QuestionFactory extends Factory
         return [
             'question' => $this->faker->text(255),
             'user_id' => User::inRandomOrder()->first()->id,
+            'category_id' => Lookup::where(['lookup_type' => config('lookups.lookup_type.question_type.slug')])->inRandomOrder()->first()->id,
             'is_active' => true,
         ];
     }

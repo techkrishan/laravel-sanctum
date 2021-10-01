@@ -2,8 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\V1\QuestionController;
-use App\Http\Controllers\V1\AuthenticationController;
+use App\Http\Controllers\V1\{AuthenticationController, UserController, QuestionController};
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +28,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('/logout', [AuthenticationController::class, 'logout']);
     
         Route::resource('questions', QuestionController::class);
+        Route::resource('users', UserController::class);
 
     });
 

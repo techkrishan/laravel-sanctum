@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\{UserRole, User};
+use App\Models\{Lookup, User};
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -27,11 +27,14 @@ class UserFactory extends Factory
         $lastName = $this->faker->lastName();
 
         return [
-            'role_id' => UserRole::where(['slug'=>config('constants.user_roles.public.slug')])->first()->id,
+            'user_type_id' => Lookup::where([
+                'slug' => config('lookups.user_type.interviewer.slug')
+            ])->first()->id,
             'first_name' => $firstName,
             'last_name' => $lastName,
             'full_name' => $firstName . ' ' . $lastName,
             'email' => $this->faker->unique()->safeEmail(),
+            'mobile' => $this->faker->phoneNumber(),
             'email_verified_at' => now(),
             'password' => bcrypt(env('TEST_USER_PASSWORD', 'password')),
             'remember_token' => Str::random(10),

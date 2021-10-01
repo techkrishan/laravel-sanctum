@@ -18,6 +18,7 @@ class User extends Authenticatable
      * @var string[]
      */
     protected $fillable = [
+        'user_type_id',
         'first_name',
         'last_name',
         'full_name',
@@ -43,4 +44,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Execute before save to database
+     * @return [type]
+     */
+    public static function boot() {
+        parent::boot();
+        static::saving(function ($model) {
+            $model->full_name = $model->first_name .' '. $model->last_name;
+            $model->email = strtolower($model->email);
+            $model->password = bcrypt($model->password);
+        });
+    }
 }
