@@ -3,71 +3,52 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\{Question, User};
+use App\Models\{Question, User, Lookup};
 
 
 class QuestionService extends AppService {
 
     public function __construct() {
-        $this->sortableFields = ['updated_at', 'id', 'user_id', 'question', 'is_active', 'created_at', 'created_by'];
+        $this->sortableFields = ['updated_at', 'id', 'user_id', 'question', 'is_active', 'created_at', 'created_by', 'category'];
     }
 
     /**
-     * Fetch paginated list
-     * @param mixed $request
+     * Fetch paginated question list or question details
+     * @param mixed $request=null
+     * @param mixed $userId=null
+     * @param mixed $id=null
      * 
-     * @return array An array of questions 
+     * @return array An array of questions or questions details
      */
-    public function fetchQuestions($request, $userId=null) {
+    public function fetch($request=null, $userId=null, $id=null) {
         $question       = new Question();
-        $userTable      = (new User())->getTable();
         $questionTable  = $question->getTable();
+        $userTable      = (new User())->getTable();
+        $lookupTable    = (new Lookup())->getTable();
         
-        // Apply sorting
-        $sortedFields = $this->sortByField($request);
-
         // Default conditions
-        $conditions = [$questionTable.'.is_deleted' => 0];
+        $conditions = [$questionTable.'.is_deleted' => config('constants.boolean_false')];
         
         // Owner condition
         if($userId) {
             $conditions[$questionTable.'.user_id'] = $userId;
         }
 
-        return $question
-            ->select([
-                $questionTable.'.*',  $userTable.'.full_name as created_by'
+        $sqlObject = $question->select([
+                $questionTable.'.*',  $userTable.'.full_name as created_by', $lookupTable.'.label as category',
             ])
+            ->join($lookupTable, $questionTable.'.category_id', '=', $lookupTable.'.id')
             ->join($userTable, $questionTable.'.user_id', '=', $userTable.'.id')
-            ->where($conditions)
-            ->orderBy($sortedFields['sort_by'], $sortedFields['sort_order'])
-            ->paginate(config('constants.page_limit'));
-    }
+            ->where($conditions); 
 
-    /**
-     * Fetch question details 
-     * @param mixed $id
-     * @param mixed $userId=null User ID of owner
-     * 
-     * @return array An array of question details
-     */
-    public function fetchDetails($id, $userId=null) {
-        // Default conditions
-        $conditions = ['is_deleted' => 0];
-        
-        // Owner condition
-        if($userId) {
-            $conditions['user_id'] = $userId;
+        if(!empty($id)) {
+            return $sqlObject->find($id);
+        } else {
+            // Apply sorting
+            $sortedFields = $this->sortByField($request);
+            return $sqlObject->orderBy($sortedFields['sort_by'], $sortedFields['sort_order'])->paginate(config('constants.page_limit'));
         }
-
-        return (new Question())
-            ->where($conditions)
-            ->with(['User' => function($query) {
-                $query->select(['id', 'first_name', 'last_name', 'full_name']);
-            }])
-            ->find($id);
     }
-
 
     public function saveDetails($question=null, $requestFields=[], $userId=null) {
         if(empty($question)) {

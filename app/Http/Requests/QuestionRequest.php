@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Models\Lookup;
 
 class QuestionRequest extends FormRequest
 {
@@ -26,12 +28,21 @@ class QuestionRequest extends FormRequest
         $requestMethod = $this->getMethod();
         $required = 'required';
         if($requestMethod === 'PUT') {
-            $required = 'bail';
+            $required = 'nullable';
         }
 
         return [
-            'question'  => $required.'|string',
-            'is_active' => 'bail|boolean',
+            'category_id'   => [
+                'bail',
+                $required,
+                'numeric',
+                Rule::exists((new Lookup())->getTable(), 'id')
+                    ->where('lookup_type', config('lookups.lookup_type.question_type.slug'))
+                    ->where('is_deleted', config('constants.boolean_false'))
+                    ->where('is_active', config('constants.boolean_true')),
+            ], 
+            'question'      => 'bail|'.$required.'|string|max:1500',
+            'is_active'     => 'bail|nullable|boolean',
         ];
     }
 }

@@ -36,7 +36,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'mobile' => $this->faker->phoneNumber(),
             'email_verified_at' => now(),
-            'password' => bcrypt(env('TEST_USER_PASSWORD', 'password')),
+            'password' => env('TEST_USER_PASSWORD', 'password'),
             'remember_token' => Str::random(10),
         ];
     }

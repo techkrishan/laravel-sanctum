@@ -18,7 +18,7 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        return $this->success((new UserService())->fetchList($request, Auth::user()->id), "", 200);
+        return $this->success((new UserService())->fetch($request, Auth::user()->id));
     }
 
     /**
@@ -30,7 +30,7 @@ class UserController extends ApiController
     public function store(UserRequest $request)
     {
         $question = (new UserService())->saveDetails(null, $request->validated(), Auth::user()->id);
-        return $this->success($question, __('messages.question_saved'), 201);
+        return $this->success($question, __('messages.user_saved'), config('constants.status_code.created'));
     }
 
     /**
@@ -41,18 +41,12 @@ class UserController extends ApiController
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        // Fetch user details
+        $user = (new UserService())->fetch(null, Auth::user()->id, $id);
+        if(empty($user)) {
+            return $this->error(__('messages.user_not_found'), config('constants.status_code.not_found'));
+        }
+        return $this->success($user);
     }
 
     /**
@@ -62,9 +56,16 @@ class UserController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
-        //
+        // Fetch user details
+        $user = (new UserService())->fetch(null, Auth::user()->id, $id);
+        if(empty($user)) {
+            return $this->error(__('messages.user_not_found'), config('constants.status_code.not_found'));
+        }
+
+        $user = (new UserService())->saveDetails($user, $request->validated());
+        return $this->success($user, __('messages.user_saved'));
     }
 
     /**
@@ -75,6 +76,13 @@ class UserController extends ApiController
      */
     public function destroy($id)
     {
-        //
+        // Fetch user details
+        $user = (new UserService())->fetch(null, Auth::user()->id, $id);
+        if(empty($user)) {
+            return $this->error(__('messages.user_not_found'), config('constants.status_code.not_found'));
+        }
+
+        $user = (new UserService())->saveDetails($user, ['is_deleted' => config('constants.boolean_true')]);
+        return $this->success([], __('messages.user_deleted'));
     }
 }

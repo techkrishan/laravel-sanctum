@@ -19,7 +19,7 @@ class QuestionController extends ApiController
      */
     public function index(Request $request)
     {
-        return $this->success((new QuestionService())->fetchQuestions($request, Auth::user()->id), "", 200);
+        return $this->success((new QuestionService())->fetch($request, Auth::user()->id));
     }
 
     /**
@@ -31,7 +31,7 @@ class QuestionController extends ApiController
     public function store(QuestionRequest $request)
     {
         $question = (new QuestionService())->saveDetails(null, $request->validated(), Auth::user()->id);
-        return $this->success($question, __('messages.question_saved'), 201);
+        return $this->success($question, __('messages.question_saved'), config('constants.status_code.created'));
     }
 
     /**
@@ -42,10 +42,10 @@ class QuestionController extends ApiController
      */
     public function show($id)
     {
-        $question = (new QuestionService())->fetchDetails($id, Auth::user()->id);
-
+        // fetch question details
+        $question = (new QuestionService())->fetch(null, Auth::user()->id, $id);
         if(empty($question)) {
-            return $this->error(__('messages.question_not_found'), 404);
+            return $this->error(__('messages.question_not_found'), config('constants.status_code.not_found'));
         }
         return $this->success($question);
     }
@@ -59,9 +59,10 @@ class QuestionController extends ApiController
      */
     public function update(QuestionRequest $request, $id)
     {   
-        $question = (new QuestionService())->fetchDetails($id, Auth::user()->id);
+        // fetch question details
+        $question = (new QuestionService())->fetch(null, Auth::user()->id, $id);
         if(empty($question)) {
-            return $this->error(__('messages.question_not_found'), 404);
+            return $this->error(__('messages.question_not_found'), config('constants.status_code.not_found'));
         }
 
         $question = (new QuestionService())->saveDetails($question, $request->validated());
@@ -76,12 +77,13 @@ class QuestionController extends ApiController
      */
     public function destroy($id)
     {
-        $question = (new QuestionService())->fetchDetails($id, Auth::user()->id);
+        // fetch question details
+        $question = (new QuestionService())->fetch(null, Auth::user()->id, $id);
         if(empty($question)) {
-            return $this->error(__('messages.question_not_found'), 404);
+            return $this->error(__('messages.question_not_found'), config('constants.status_code.not_found'));
         }
         
-        $question = (new QuestionService())->saveDetails($question, ['is_deleted'=>1]);
-        return $this->success(['id'=>$question->id], __('messages.question_saved'));
+        $question = (new QuestionService())->saveDetails($question, ['is_deleted' => config('constants.boolean_true')]);
+        return $this->success([], __('messages.question_deleted'));
     }
 }

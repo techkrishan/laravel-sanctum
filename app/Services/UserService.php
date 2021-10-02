@@ -24,24 +24,23 @@ class UserService extends AppService {
     }
 
     /**
-     * Fetch paginated list
-     * @param mixed $request
+     * Fetch user details or paginated user list
+     * @param mixed $request=null
+     * @param mixed $userId=null Owner user ID
+     * @param mixed $id=null User ID 
      * 
-     * @return array An array of questions 
+     * @return array An array of questions or question details 
      */
-    public function fetchList($request, $userId=null) {
+    public function fetch($request=null, $userId=null, $id=null) {
         $user           = new user();
         $userTable      = $user->getTable();
         $lookupTable    = (new Lookup())->getTable();
         
-        // Apply sorting
-        $sortedFields = $this->sortByField($request);
-
         // Default conditions
         $conditions = [
-            $lookupTable.'.is_deleted' => 0,
-            $lookupTable.'.is_active' => 1,
-            $userTable.'.is_deleted' => 0,
+            $lookupTable.'.is_deleted'  => config('constants.boolean_false'),
+            $lookupTable.'.is_active'   => config('constants.boolean_true'),
+            $userTable.'.is_deleted'    => config('constants.boolean_false'),
         ];
         
         // Owner condition
@@ -49,41 +48,21 @@ class UserService extends AppService {
             $conditions[$userTable.'.user_id'] = $userId;
         }
 
-        return $user
-            ->select([
+        $sqlObject = $user->select([
                 $userTable.'.*',  $lookupTable.'.label as user_type', 'owner_users.full_name as created_by'
             ])
             ->leftJoin($userTable.' as owner_users', $userTable.'.user_id', '=', 'owner_users.id')
             ->join($lookupTable, $userTable.'.user_type_id', '=', $lookupTable.'.id')
-            ->where($conditions)
-            ->orderBy($sortedFields['sort_by'], $sortedFields['sort_order'])
-            ->paginate(config('constants.page_limit'));
-    }
+            ->where($conditions); 
 
-    /**
-     * Fetch question details 
-     * @param mixed $id
-     * @param mixed $userId=null User ID of owner
-     * 
-     * @return array An array of question details
-     */
-    public function fetchDetails($id, $userId=null) {
-        // Default conditions
-        $conditions = ['is_deleted' => 0];
-        
-        // Owner condition
-        if($userId) {
-            $conditions['user_id'] = $userId;
+        if(!empty($id)) {
+            return $sqlObject->find($id);
+        } else {
+            // Apply sorting
+            $sortedFields = $this->sortByField($request);
+            return $sqlObject->orderBy($sortedFields['sort_by'], $sortedFields['sort_order'])->paginate(config('constants.page_limit'));
         }
-
-        return (new Question())
-            ->where($conditions)
-            ->with(['User' => function($query) {
-                $query->select(['id', 'first_name', 'last_name', 'full_name']);
-            }])
-            ->find($id);
     }
-
 
     /**
      * Save the user details
@@ -95,16 +74,16 @@ class UserService extends AppService {
      */
     public function saveDetails($user=null, $requestFields=[], $userId=null) {
         
-        // Set default user type
-        if(empty($requestFields['user_type_id'])) {
-            $requestFields['user_type_id'] = Lookup::where([
-                'slug' => config('lookups.user_type.interviewee.slug')
-            ])->first()->id;
-        }
-
         if(empty($user)) {
             $user = new User();
             $user->user_id = $userId;
+
+            // Set default user type
+            if(empty($requestFields['user_type_id'])) {
+                $requestFields['user_type_id'] = Lookup::where([
+                    'slug' => config('lookups.user_type.interviewee.slug')
+                ])->first()->id;
+            }
         }
 
         foreach($requestFields as $key => $value) {

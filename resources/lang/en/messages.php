@@ -10,4 +10,9 @@ return [
     'question_saved'        => 'Question has been saved successfully.',
     'question_deleted'      => 'Question has been deleted.',
     'question_not_found'    => 'Question not found.',
+
+    // User messages
+    'user_not_found'        => 'User not found',
+    'user_saved'            => 'User has been saved successfully.',
+    'user_deleted'          => 'User has been deleted.',
 ]; 
