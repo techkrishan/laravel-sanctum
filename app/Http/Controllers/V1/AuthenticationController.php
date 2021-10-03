@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use App\Services\UserService;
@@ -19,8 +20,13 @@ class AuthenticationController extends ApiController
      */
     public function register(UserRequest $request)
     {
-        (new UserService())->saveDetails(null, $request->validated(), null);
-        return $this->success([], __('messages.user_register'));
+        return DB::transaction(function() use ($request) {
+            $userService = new UserService();
+            $user = $userService->saveDetails(null, $request->validated(), null);
+            $userService->sendEmail($user, config('email_constants.account_verification'));
+
+            return $this->success($user, __('messages.user_register'));
+        });
     }
 
     
@@ -59,4 +65,5 @@ class AuthenticationController extends ApiController
             'message' => __('messages.user_logout')
         ];
     }
+    
 }

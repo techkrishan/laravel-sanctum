@@ -4,7 +4,8 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\{User, Lookup};
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEmail;
 
 class UserService extends AppService {
 
@@ -91,5 +92,22 @@ class UserService extends AppService {
         }
         $user->save();
         return $user;
+    }
+
+    /**
+     * Send email notification for user related events
+     * @param mixed $user
+     * @param mixed $emailMetaData=[]
+     * 
+     * @return void
+     */
+    public function sendEmail($user, $emailMetaData=[]) {
+        if(config('constants.enable_mail')) {
+            Mail::queue(new SendEmail([
+                'to_email'      => $user->email,
+                'meta_data'     => $emailMetaData,
+                'data'          => $user->toArray(),
+            ]));
+        }
     }
 }

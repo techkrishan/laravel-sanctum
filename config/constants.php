@@ -6,6 +6,7 @@ return [
     'page_limit'    => env('PAGE_LIMIT', 10),
     'boolean_true'  => 1,
     'boolean_false' => 0,
+    'enable_mail'   => env('ENABLE_EMAIL', 0),
 
     // Http status codes
     'status_code'   => [
