@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\V1;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\{UserRequest, SendVerificationEmailRequest};
-use App\Http\Requests\Auth\{VerifyEmailRequest, ResetPasswordOtpRequest, ResetPasswordRequest};
+use App\Http\Requests\Auth\{VerifyEmailRequest, ResetPasswordOtpRequest, ResetPasswordRequest, LoginRequest};
 use App\Services\{UserService, AuthService};
 use App\Models\User;
-use Auth;
 
 class AuthenticationController extends ApiController
 {
@@ -36,17 +36,11 @@ class AuthenticationController extends ApiController
      * 
      * @return json
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $attr = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string|min:6'
-        ]);
-
-        if (!Auth::attempt($attr)) {
-            return $this->error(__('messages.credentials_not_match'), 401);
-        }
-
+        // Authenticate user credentials
+        $request->authenticate();
+        
         return $this->success([
             'token' => auth()->user()->createToken('API Token')->plainTextToken,
             'user' => Auth::user(),
@@ -94,7 +88,7 @@ class AuthenticationController extends ApiController
             $authService = new AuthService();
             $row = $authService->isValidOTP($requestData, config('constants.verification_otp_expiry'), config('lookups.otp_type.email_verification.slug'));
             $user  = User::find($row->user_id);
-            $authService->saveDetails($user, [
+            (new UserService())->saveDetails($user, [
                 'email_verified_at' => time(),
             ]);
             $authService->deleteOTP($row->id);
@@ -117,7 +111,7 @@ class AuthenticationController extends ApiController
             $authService = new AuthService();
             $row = $authService->isValidOTP($requestData, config('constants.password_otp_expiry'), config('lookups.otp_type.reset_password.slug'));
             $user  = User::find($row->user_id);
-            $authService->saveDetails($user, [
+            (new UserService())->saveDetails($user, [
                 'password' => $requestData['password'],
             ]);
             $authService->deleteOTP($row->id);
