@@ -140,6 +140,9 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'verification_email' => [
+            'exists' => 'Email does not exist or already been verified',
+        ],
     ],
 
     /*
@@ -155,4 +158,8 @@ return [
 
     'attributes' => [],
 
+    'otp' => [
+        'invalid' => 'OTP is not valid or expired one',
+    ],
+    'reset_password_otp_exists' => 'The email does not exist'
 ];

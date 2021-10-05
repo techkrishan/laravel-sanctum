@@ -7,6 +7,11 @@ return [
     'boolean_true'  => 1,
     'boolean_false' => 0,
     'enable_mail'   => env('ENABLE_EMAIL', 0),
+    'otp_length'    => env('OTP_LENGTH', 6),
+    
+    // OTP expiry
+    'verification_otp_expiry'   => env('VERIFICATION_OTP_EXPIRY', 60), // Minutes
+    'password_otp_expiry'       => env('PASSWORD_OTP_EXPIRY', 60), // Minutes
 
     // Http status codes
     'status_code'   => [

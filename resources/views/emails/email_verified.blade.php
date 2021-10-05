@@ -1,10 +1,8 @@
 <p>Hi {{ $first_name }},</p>
 
 <p>
-    We're excited to have you get started. First, you need to confirm your account by using the below verification code.
+    Your email address has been verified, now you can use our services without any interruption.
 </p>
-
-<p>Verification code: <strong>{{ $otp }}</strong></p>
 
 <p>
     If you have any questions, just reply to this email—we're always happy to help out.

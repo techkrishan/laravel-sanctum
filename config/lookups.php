@@ -26,6 +26,12 @@ return [
             'is_public'     => 0,
             'sort_order'    => 4,
         ],
+        'otp_type'          => [
+            'slug'          => 'otp_type',
+            'label'         => 'OTP Type',            
+            'is_public'     => 0,
+            'sort_order'    => 5,
+        ],
     ],
     'user_type' => [
         'admin'             => [
@@ -53,6 +59,20 @@ return [
             'slug'          => 'general',
             'label'         => 'General',
             'is_default'    => 1,
+        ],
+    ],
+
+    // User one time password
+    'otp_type'                  => [
+        'email_verification'    => [
+            'slug'              => 'email_verification',
+            'label'             => 'Email Verification',
+            'is_public'         => 0,
+        ],
+        'reset_password'        => [
+            'slug'              => 'reset_password',
+            'label'             => 'Reset Password',
+            'is_public'         => 0,
         ],
     ],
 ];

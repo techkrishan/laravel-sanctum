@@ -21,14 +21,21 @@ Route::group(['prefix' => 'v1'], function () {
     // Unauthenticated routes  
     Route::post('/register', [AuthenticationController::class, 'register']);
     Route::post('/login', [AuthenticationController::class, 'login']);
+    Route::post('/verification-email', [AuthenticationController::class, 'sendVerificationEmail']);
+    Route::post('/verify-email', [AuthenticationController::class, 'verifyEmail']);
+    Route::post('/reset-password-otp', [AuthenticationController::class, 'resetPasswordOtp']);
+    Route::post('/reset-password', [AuthenticationController::class, 'resetPassword']);
 
     // Authenticated routes
-    Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
         Route::post('/logout', [AuthenticationController::class, 'logout']);
-    
-        Route::resource('questions', QuestionController::class);
-        Route::resource('users', UserController::class);
+        
+        // Verified routes
+        Route::group(['middleware' => ['verified']], function () {
+            Route::resource('questions', QuestionController::class);
+            Route::resource('users', UserController::class);
+        });
 
     });
 

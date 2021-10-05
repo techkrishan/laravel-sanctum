@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LookupSeeder::class,
         ]);
-        \App\Models\User::factory(1000)->create();
-        \App\Models\Question::factory(10000)->create();
+        // \App\Models\User::factory(1000)->create();
+        // \App\Models\Question::factory(10000)->create();
     }
 }

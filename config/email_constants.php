@@ -8,9 +8,9 @@ return [
         'subject'           => $appName . ' | Email verification',
         'view_template'     => 'emails.account_verification',
     ],
-    'forgot_password'       => [
+    'reset_password_otp'    => [
         'subject'           => $appName . ' | Password reset code',
-        'view_template'     => 'emails.reset_password',
+        'view_template'     => 'emails.reset_password_otp',
     ],
     'change_password'       => [
         'subject'           => $appName . ' | Password reset successfully',
