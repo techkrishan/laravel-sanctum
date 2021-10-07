@@ -24,7 +24,7 @@ class AuthenticationController extends ApiController
         return DB::transaction(function() use ($request) {
             $userService = new UserService();
             $user = $userService->saveDetails(null, $request->validated(), null);
-            $userService->sendOtp($user, config('email_constants.account_verification'), config('lookups.otp_type.email_verification.slug'));
+            (new AuthService())->sendOtp($user, config('email_constants.account_verification'), config('lookups.otp_type.email_verification.slug'));
             return $this->success($user, __('messages.user_register'));
         });
     }
